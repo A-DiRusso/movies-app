@@ -1,22 +1,36 @@
-const http = require('http');
+const express = require('express');
+const app = express();
+// const http = require('http');
 const GaryBuseyMovies = require('../models/movies');
 
-const hostname = '127.0.0.1';
+// const hostname = '127.0.0.1';
 const port = 3000;
 
-const server = http.createServer( async (req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
+app.get('/', (req, res) => {res.send('Welcome to the Gary Busey Random movie page!')});
 
-    if (req.url === '/busey') {
-        const buseyMovies = await GaryBuseyMovies.getAll();
-        const buseyMoviesJSON = JSON.stringify(buseyMovies);
-        res.end(buseyMoviesJSON);
-    } else {
-        res.end(`{message: "Why isn't Tommy Boy on this list?}`)
-    }
+app.get('/busey', async (req, res) => {
+    const buseyMovies = await GaryBuseyMovies.getAll();
+    res.json(buseyMovies);
 });
 
-server.listen(port, hostname, () => {
-    console.log(`The server IS running at http://${hostname}:${port} ????`)
+app.get('/busey/:id', async (req, res) => {
+    const {id} = req.params;
+    const buseyMovie = await GaryBuseyMovies.getById(id);
+    res.json(buseyMovie);
+});
+// const server = http.createServer( async (req, res) => {
+//     res.statusCode = 200;
+//     res.setHeader('Content-Type', 'application/json');
+
+//     if (req.url === '/busey') {
+//         const buseyMovies = await GaryBuseyMovies.getAll();
+//         const buseyMoviesJSON = JSON.stringify(buseyMovies);
+//         res.end(buseyMoviesJSON);
+//     } else {
+//         res.end(`{message: "Why isn't Tommy Boy on this list?}`)
+//     }
+// });
+
+app.listen(port, () => {
+    console.log(`The server IS running at port:${port}?`)
 });
